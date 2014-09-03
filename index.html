@@ -40,9 +40,8 @@
             var currentPerspective = "home";
 
             var options = {
-//                serverUrl: "http://browser.ihtsdotools.org/api",
-//                serverUrl: "http://107.170.33.116:3000/snomed",
-                serverUrl: "http://107.170.98.11/api/snomed",
+//                serverUrl: "http://162.243.35.127/api/snomed",
+                serverUrl: "http://107.170.134.237/api/snomed",
                 edition: "multi-edition",
                 release: "v20140701",
                 showIds: false,
@@ -62,6 +61,15 @@
                 statusSearchFilter: "activeOnly",
                 highlightByEffectiveTime: "false"
             };
+
+            var manifests = [];
+//            console.log(options.serverUrl.replace("snomed", "") + "server/releases");
+            xhr = $.getJSON(options.serverUrl.replace("snomed", "") + "server/releases", function (result) {
+                // nothing
+            }).done(function (result) {
+                manifests = result;
+//                console.log(manifests);
+            });
 
             var tours = {};
             var tour;
@@ -179,7 +187,7 @@
                     $('#license-modal').modal('show');
                 }
 
-                verifyDate(release)
+//                verifyDate(release)
             }
 
             function initTour() {
@@ -346,6 +354,7 @@
                 }
             }
             function initialize() {
+                postal.unsubscribeFor();
                 componentsRegistry = [];
                 currentPerspective = "home";
                 $("#welcome-perspective").css({"display":"block"});
@@ -359,6 +368,7 @@
             }
             function switchToBrowsing(cd1Value, cd2Value, txValue1) {
                 currentPerspective = "browsing";
+                postal.unsubscribeFor();
                 $.each(componentsRegistry, function(i, field){
                     field = null;
                 });
@@ -388,6 +398,7 @@
             }
             function switchToComparingConcepts(cd1Value, cd2Value) {
                 currentPerspective = "compare_concepts";
+                postal.unsubscribeFor();
                 $.each(componentsRegistry, function(i, field){
                     field = null;
                 });
@@ -414,6 +425,7 @@
             }
             function switchToComparingTaxonomies(cd1Value, txValue1, txValue2) {
                 currentPerspective = "compare_hierarchies";
+                postal.unsubscribeFor();
                 $.each(componentsRegistry, function(i, field){
                     field = null;
                 });
@@ -441,6 +453,7 @@
             }
             function switchToFullHeight(cd1Value, txValue1) {
                 currentPerspective = "full";
+                postal.unsubscribeFor();
                 $.each(componentsRegistry, function(i, field){
                     field = null;
                 });
@@ -456,12 +469,20 @@
                 fhOptions.subscribersMarker = false;
                 fhOptions.linkerButton = false;
                 var tpt = new taxonomyPanel(document.getElementById("fh-taxonomy_canvas"), txValue1, fhOptions);
+                var fav = new favoritePanel(document.getElementById("fh-favorites_canvas"), fhOptions);
+                var ref = new refsetPanel(document.getElementById("fh-refset_canvas"), fhOptions);
                 var spa = new searchPanel(document.getElementById("fh-search_canvas"), fhOptions);
                 var cdPanel1 = new conceptDetails(document.getElementById("fh-cd1_canvas"), cd1Value, fhOptions);
                 cdPanel1.subscribe(tpt);
                 cdPanel1.subscribe(spa);
+                cdPanel1.subscribe(fav);
+                cdPanel1.subscribe(ref);
                 cdPanel1.setupCanvas();
-                $('#spliter-fh').split({orientation: 'vertical', limit: 20, position: '40%'});
+                if(window.screen.width > 1500){
+                    $('#spliter-fh').split({orientation: 'vertical', limit: 20, position: '40%'});
+                }else{
+                    $('#spliter-fh').split({orientation: 'vertical', limit: 20, position: '50%'});
+                }
                 switchLanguage(selectedLanguage, selectedFlag, false);
                 if (typeof QueryString.searchTerm != "undefined") {
                     $('#fh-tabs li:eq(1) a').tab('show');
@@ -473,6 +494,7 @@
             }
             function switchToResponsiveLayout(cd1Value, cd2Value, txValue1) {
                 currentPerspective = "responsive";
+                postal.unsubscribeFor();
                 $.each(componentsRegistry, function(i, field){
                     field = null;
                 });
@@ -502,6 +524,7 @@
             }
 
             function reloadCurrentPerspective() {
+                postal.unsubscribeFor();
                 var cdValue1 = 404684003;
                 var cdValue2 = 404684003;
                 var txValue1 = 138875005;
@@ -525,7 +548,20 @@
             }
 
             function switchRelease(label, edition, release, langRefset) {
-                verifyDate(release);
+//                verifyDate(release);
+                postal.unsubscribeFor();
+                if (typeof componentsRegistry !="undefined"){
+                    $.each(componentsRegistry, function(i, field){
+                        field = null;
+                    });
+                    componentsRegistry = [];
+                }
+                $.each(manifests, function (i, field){
+                    if (edition == field.databaseName){
+                        options.manifest = field;
+                        verifyDate(field.expirationDate);
+                    }
+                });
                 options.edition = edition;
                 options.release = release;
                 options.langRefset = langRefset;
@@ -536,19 +572,17 @@
                 var now = new Date()
                 //console.log(release.substring(1, 5) + " " +  release.substring(5, 7) + " " +  release.substring(7, 9));
                 var releaseDate = new Date(release.substring(1, 5), release.substring(5, 7)-1, release.substring(7, 9));
-                var diff = now - releaseDate;
-                diff = Math.round(diff/1000/60/60/24);
-                //console.log("Dates: " + now + " " + releaseDate + " " + diff);
-                if (diff > 180 ) {
-                    //console.log("Alert! outadated...");
+                if (releaseDate < now){
+//                    console.log("bien");
+                    $("#alert-section").html("");
+                }else{
+//                    console.log("expirada");
                     var alertHtml = '<div class="alert alert-danger" id="outdated-alert">';
                     alertHtml = alertHtml + '<a href="#" class="close" data-dismiss="alert">&times;</a>';
-                    alertHtml = alertHtml + '<strong>Warning!</strong> the release you are browsing is more than 6 months old.';
+                    alertHtml = alertHtml + '<strong>Warning!</strong> the release you are browsing is expired.';
                     alertHtml = alertHtml + '</div>';
                     $("#alert-section").html(alertHtml);
                     $("#outdated-alert").alert();
-                } else {
-                    $("#alert-section").html("");
                 }
             }
 
@@ -789,10 +823,14 @@
                         <ul class="nav nav-tabs" id="fh-tabs">
                             <li class="active"><a href="#fh-taxonomy_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_taxonomy">Taxonomy</span></a></li>
                             <li><a href="#fh-search_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_search">Search</span></a></li>
+                            <li id="fh-favorites_canvas-li"><a href="#fh-favorites_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_favorites">Favorites</span></a></li>
+                            <li id="fh-refset_canvas-li"><a href="#fh-refset_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_refset">Refset</span></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="fh-taxonomy_canvas" style="padding: 0px;margin: 0;"></div>
                             <div class="tab-pane" id="fh-search_canvas" style="padding: 0px;margin: 0;"></div>
+                            <div class="tab-pane" id="fh-favorites_canvas" style="padding: 0px;margin: 0;"></div>
+                            <div class="tab-pane" id="fh-refset_canvas" style="padding: 0px;margin: 0;"></div>
                         </div>
                     </div>
                     <div class="" id="conceptDetails-fh">
