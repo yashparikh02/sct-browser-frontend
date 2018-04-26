@@ -50,7 +50,7 @@
             var options = {
                 serverUrl: "https://dailybuild.ihtsdotools.org/api/snomed",
                 edition: "us-edition",
-                release: "v20180301",
+                release: "v20180901",
                 showIds: false,
                 hideNotAcceptable: true,
                 displayInactiveDescriptions: false,
@@ -66,7 +66,7 @@
                 searchLang: "english",
                 diagrammingMarkupEnabled: false,
                 statusSearchFilter: "activeOnly",
-                highlightByEffectiveTime: "20180301"
+                highlightByEffectiveTime: "20180901"
             };
             options.languageNameOfLangRefset = {
                 "900000000000508004": "GB",
@@ -838,7 +838,7 @@
                     <h2><span class="text-warning">Warning</span></h2>
                     <p>This browser contains a test build of the terminology for evaluation purposes only. There can be no expectation of continuity of identifiers, descriptions text or changes in components (e.g. relationships).</p>
                     <p>No new concepts or identifiers may be used in clinical systems.</p>
-                    <a class="btn btn-primary btn-lg" role="button" onclick="switchRelease('US Daily Build Edition', 'us-edition', 'v20180301', '900000000000509007', 'https://prod-dailybuild.ihtsdotools.org/api/snomed');switchToFullHeight(404684003, 138875005);"><img src="img/box-logo.png" style="height:20px">&nbsp;&nbsp;&nbsp;<span class="i18n"data-i18n-id="i18n_start_browsing">Start browsing...</span><br><span class="small">US Daily Build edition</span></a>
+                    <a class="btn btn-primary btn-lg" role="button" onclick="switchRelease('US Daily Build Edition', 'us-edition', 'v20180901', '900000000000509007', 'https://prod-dailybuild.ihtsdotools.org/api/snomed');switchToFullHeight(404684003, 138875005);"><img src="img/box-logo.png" style="height:20px">&nbsp;&nbsp;&nbsp;<span class="i18n"data-i18n-id="i18n_start_browsing">Start browsing...</span><br><span class="small">US Daily Build edition</span></a>
                     <br>
                     <p id="lastUpdatedText"></p>
                     <br>
@@ -870,6 +870,7 @@
             </div>
             <footer>
                 <p>
+                    <strong><a href="http://snomed.org/snomedtools-privacy" target=_blank>SNOMED International Privacy Policy</a></strong><br></br>
                     <small><b>&copy; SNOMED International 2018</b> v1.36</small>
                 </p>
             </footer>
@@ -1010,17 +1011,14 @@ window.onload=function(){
  document.body.appendChild(e);
 }
 </script>
-<!-- Google Analytics script -->
-        <script>
-			  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  				(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  				})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  				ga('create', 'UA-41892858-7', 'ihtsdotools.org');
-  				ga('send', 'pageview');
-
-		</script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-41892858-31"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-41892858-31', { 'anonymize_ip': true }));
+    </script>
 
     </body>
 </html>
