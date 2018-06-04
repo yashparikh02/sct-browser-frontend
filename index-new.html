@@ -168,9 +168,6 @@
         }();
 
         function start() {
-            if (!!window.MSInputMethodContext && !!document.documentMode) {
-                window.location.replace("http://browser.ihtsdotools.org/index-ie.html");
-            }
             // Read parameters
             $(function() {
                 $.extend($.fn.disableTextSelect = function() {
@@ -856,7 +853,7 @@
             if (serverUrl) {
                 options.serverUrl = serverUrl;
             } else {
-                options.serverUrl = "http://browser.ihtsdotools.org/api/snomed";
+                options.serverUrl = "https://dailybuild.ihtsdotools.org/api/snomed";
             }
             $("#perspective-selector").find("button").first().removeClass("disabled");
             $("#editionLabel").html(label);
