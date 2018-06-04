@@ -128,17 +128,16 @@
         var manifests;
 
         function loadManifests() {
-            xhrM = $.getJSON(options.serverUrl.replace("/snomed", "") + "/server/releases", function(result) {
+            xhrM = $.getJSON(options.serverUrl.replace("snomed", "") + "server/releases", function(result) {
                 // nothing
             }).done(function(result) {
                 manifests = result;
-                //console.log(result);
+                start();
             }).fail(function() {
                 $.notify("Error Terminology server not accessible!", {
                     autoHide: false,
                     className: "error"
                 });
-                //                alert("Error Terminolgy server not accesed");
                 console.log("fail Manifest");
             });
         }
