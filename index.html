@@ -41,6 +41,7 @@
     <script src="snomed-interaction-components/js/snomed-interaction-components-1.37.4.3.min.js"></script>
     <script src="external-libs/jquery.history.js"></script>
     <script src="external-libs/ZeroClipboard.js"></script>
+    <script src="snomed-interaction-components/js/dailyBuildPlugin.js"></script>
 
     <script type="text/javascript">
         function getCookie(c_name) {
@@ -559,6 +560,9 @@
                 field.loadMarkers();
             });
             switchLanguage(selectedLanguage, selectedFlag, false);
+            $.each(componentsRegistry, function(i, field) {
+                field.loadMarkers();
+            });
         }
 
         function switchToComparingConcepts(cd1Value, cd2Value) {
@@ -605,6 +609,9 @@
                 field.loadMarkers();
             });
             switchLanguage(selectedLanguage, selectedFlag, false);
+            $.each(componentsRegistry, function(i, field) {
+                field.loadMarkers();
+            });
         }
 
         function switchToComparingTaxonomies(cd1Value, txValue1, txValue2) {
@@ -656,6 +663,9 @@
                 field.loadMarkers();
             });
             switchLanguage(selectedLanguage, selectedFlag, false);
+            $.each(componentsRegistry, function(i, field) {
+                field.loadMarkers();
+            });
         }
 
         function switchToFullHeight(cd1Value, txValue1) {
@@ -686,30 +696,23 @@
                 "display": "none"
             });
             $("#perspectiveLabel").html("Full");
+            $("#fh-query_canvas-li").show();
             var fhOptions = jQuery.extend(true, {}, options);
             fhOptions.subscribersMarker = false;
             fhOptions.linkerButton = false;
             var tpt = new taxonomyPanel(document.getElementById("fh-taxonomy_canvas"), txValue1, fhOptions);
             var fav = new favoritePanel(document.getElementById("fh-favorites_canvas"), fhOptions);
             var ref = new refsetPanel(document.getElementById("fh-refset_canvas"), fhOptions);
+            var dai = new dailyBuildPanel(document.getElementById("fh-daily_canvas"), fhOptions);
             var spa = new searchPanel(document.getElementById("fh-search_canvas"), fhOptions);
+            var qpa = new queryComputerPanel(document.getElementById("fh-query_canvas"), fhOptions);
             var cdPanel1 = new conceptDetails(document.getElementById("fh-cd1_canvas"), cd1Value, fhOptions);
-            if (enableQueriesInFullPerspective) {
-                //                if ((cdPanel1.options.edition == "en-edition") || (cdPanel1.options.edition == "us-edition")) {
-                if (cdPanel1.options.edition == "en-edition") {
-                    $("#fh-query_canvas-li").show();
-                    var qpa = new queryComputerPanel(document.getElementById("fh-query_canvas"), fhOptions);
-                    cdPanel1.subscribe(qpa);
-                } else {
-                    $("#fh-query_canvas-li").hide();
-                }
-            } else {
-                $("#fh-query_canvas-li").hide();
-            }
             cdPanel1.subscribe(tpt);
             cdPanel1.subscribe(spa);
             cdPanel1.subscribe(fav);
             cdPanel1.subscribe(ref);
+            cdPanel1.subscribe(dai);
+            cdPanel1.subscribe(qpa);
             cdPanel1.setupCanvas();
             if (window.screen.width > 1500) {
                 $('#spliter-fh').split({
@@ -983,10 +986,8 @@
                             </button>
                         <ul class="dropdown-menu">
                             <li><a href="javascript:void(0);" onclick="switchToFullHeight(404684003, 138875005);"><span class="i18n" data-i18n-id="i18n_full_perspective">Full</span></a></li>
-                            <!--                                <li><a href="javascript:void(0);" onclick="switchToBrowsing(404684003,404684003, 138875005);"><span class="i18n" data-i18n-id="i18n_browsing_perspective">Browsing</span></a></li> -->
                             <li><a href="javascript:void(0);" onclick="switchToComparingConcepts(404684003, 404684003);"><span class="i18n" data-i18n-id="i18n_comp_concepts_perspective">Comparing concepts</span></a></li>
                             <li><a href="javascript:void(0);" onclick="switchToComparingTaxonomies(404684003, 138875005, 138875005);"><span class="i18n" data-i18n-id="i18n_comp_hier_perspective">Comparing hierarchy</span></a></li>
-                            <li><a href="javascript:void(0);" onclick="switchToResponsiveLayout(404684003, 404684003, 138875005);"><span class="i18n" data-i18n-id="i18n_responsive_perspective">Responsive (tablets, phones)</span></a></li>
                         </ul>
                     </li>
                     <li class="navbar-btn feedback-button">
@@ -1148,24 +1149,18 @@
                 <div class="a panel panel-default" id="fh-tabs-pane" style="border-radius: 0px;">
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" id="fh-tabs">
-                        <li>
-                            <a href="#fh-taxonomy_canvas" data-toggle="tab">
-                                <div>
-                                    <span ondrop="dropT(event, 'fh-taxonomy_canvas');$('#fh-tabs a:first').tab('show');" ondragleave="removeHighlight();" ondragover="allowDrop(event)" class="i18n" data-i18n-id="i18n_taxonomy">Taxonomy</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="active"><a href="#fh-search_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_search">Search</span></a></li>
+                        <li class="active"><a href="#fh-taxonomy_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_taxonomy">Taxonomy</span></a></li>
+                        <li><a href="#fh-search_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_search">Search</span></a></li>
                         <li id="fh-favorites_canvas-li"><a href="#fh-favorites_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_favorites">Favorites</span></a></li>
                         <li id="fh-refset_canvas-li"><a href="#fh-refset_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_refset">Refset</span></a></li>
-                        <!--<li id="fh-query_canvas-li"><a href="#fh-query_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_constraint">Constraint</span></a></li>-->
+                        <li id="fh-daily_canvas-li"><a href="#fh-daily_canvas" data-toggle="tab"><span class="i18n" data-i18n-id="i18n_daily_build">Daily Build</span></a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane" id="fh-taxonomy_canvas" style="padding: 0px;margin: 0;"></div>
-                        <div class="tab-pane active" id="fh-search_canvas" style="padding: 0px;margin: 0;"></div>
+                        <div class="tab-pane active" id="fh-taxonomy_canvas" style="padding: 0px;margin: 0;"></div>
+                        <div class="tab-pane" id="fh-search_canvas" style="padding: 0px;margin: 0;"></div>
                         <div class="tab-pane" id="fh-favorites_canvas" style="padding: 0px;margin: 0;"></div>
                         <div class="tab-pane" id="fh-refset_canvas" style="padding: 0px;margin: 0;"></div>
-                        <!--<div class="tab-pane" id="fh-query_canvas" style="padding: 0px;margin: 0;"></div>-->
+                        <div class="tab-pane" id="fh-daily_canvas" style="padding: 0px;margin: 0;"></div>
                     </div>
                 </div>
                 <div class="a panel panel-default" id="fh-tabs-pane2" style="border-radius: 0px;">
@@ -1180,7 +1175,6 @@
                         <div class="tab-pane" id="fh-query_canvas" style="padding: 0px;margin: 0;"></div>
                     </div>
                 </div>
-
             </div>
         </div>
         <!-- Responsive Perspective -->
